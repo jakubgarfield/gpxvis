@@ -14,7 +14,18 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/ajesler/gpxvis"
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  excluded_files = [
+    "spec/",
+    "\\.", # remove all dot files
+    "Rakefile",
+    "Gemfile",
+    "bin/console",
+    "bin/setup",
+    "gpxvis.gemspec"
+  ].join("|")
+  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
+    f.match(%r{^(#{excluded_files})})
+  end
   spec.bindir        = "bin"
   spec.executables   = ["gpxvis"]
   spec.require_paths = ["lib"]
