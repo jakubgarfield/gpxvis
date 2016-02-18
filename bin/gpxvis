@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'gpxvis'
+
+Gpxvis::Converter.new(ARGV[0]).process
