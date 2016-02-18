@@ -10,7 +10,7 @@ module Gpxvis
     def self.from_gpx_element(element)
       raise "element cannot be nil" if element.nil?
 
-      name = element.at_xpath("xmlns:name").content || 'Unknown'
+      name = element.at_xpath("xmlns:name").content || 'Unknown Track'
 
       track_segment = element.at_xpath("xmlns:trkseg")
       track_point_nodes = track_segment.xpath("xmlns:trkpt")
@@ -70,7 +70,7 @@ module Gpxvis
         Stat.new(:moving_duration_human, ChronicDuration.output(moving_duration), nil),
         Stat.new(:average_moving_speed, average_moving_speed, "km/h"),
         Stat.new(:point_count, points.count, nil)
-      ]
+      ].each_with_object({}) { |s, h| h[s.name] = s }
     end
   end
 end

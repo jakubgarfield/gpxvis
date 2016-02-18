@@ -1,8 +1,7 @@
-require 'nokogiri'
-require 'erb'
-require 'pry'
 require 'gpxvis/point'
 require 'gpxvis/track'
+require 'gpxvis/renderer'
+require 'nokogiri'
 
 module Gpxvis
   class Converter
@@ -18,24 +17,17 @@ module Gpxvis
       @gpx_document = File.open(file_name) { |f| Nokogiri::XML(f) }
 
       track_element = gpx_document.xpath("//xmlns:trk").first
+      raise "No 'trk' element found in #{file_name}" unless track_element
 
       @track = Track.from_gpx_element(track_element)
 
-      render
-
-      puts "Track: #{track.name}"
-      track.stats.each do |stat|
-        puts stat
-      end
-    end
-
-    def render
       output_file_name = "gpx_index.html"
-      template = File.read "assets/templates/index.html.erb"
-      renderer = ERB.new(template)
-      File.write(output_file_name, renderer.result(binding))
+      Renderer.new(track).render(output_file_name)
 
-      puts "Rendered to #{output_file_name}"
+      puts "#{track.name}"
+      track.stats.each do |name, stat|
+        puts "\t#{stat}"
+      end
     end
   end
 end
