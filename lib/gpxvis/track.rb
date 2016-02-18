@@ -44,13 +44,26 @@ module Gpxvis
     end
 
     def moving_points
-      points.each_cons(2).select do |p1, p2|
+      @moving_points ||= points.each_cons(2).select do |p1, p2|
         p1.distance_from(p2) > MOVING_THRESHOLD
       end
     end
 
     def average_moving_speed
       (((distance / 1000) / moving_duration) * 3600).round(2)
+    end
+
+    def elevation
+      @elevation ||= (moving_points.map { |i1, i2| i1 } << moving_points.last.last)
+        .map(&:ele)
+        .each_cons(7)
+        .map { |i| i.reduce(:+) / i.size.to_f }
+        .each_cons(2)
+        .map { |e1, e2| e2 - e1 }
+        .reduce({ uphill: 0, downhill: 0}) do |result, elevation_delta|
+          result[elevation_delta > 0 ? :uphill : :downhill] += elevation_delta
+          result
+        end
     end
 
     class Stat < Struct.new(:name, :value, :units)
@@ -69,7 +82,10 @@ module Gpxvis
         Stat.new(:moving_duration, moving_duration, "seconds"),
         Stat.new(:moving_duration_human, ChronicDuration.output(moving_duration), nil),
         Stat.new(:average_moving_speed, average_moving_speed, "km/h"),
-        Stat.new(:point_count, points.count, nil)
+        Stat.new(:point_count, points.count, nil),
+        Stat.new(:moving_point_count, moving_points.count, nil),
+        Stat.new(:uphill_elevation, elevation[:uphill].round(2), "m"),
+        Stat.new(:downhill_elevation, elevation[:downhill].round(2), "m"),
       ].each_with_object({}) { |s, h| h[s.name] = s }
     end
   end
