@@ -3,6 +3,8 @@ require 'chronic_duration'
 
 module Gpxvis
   class Track
+    MOVING_THRESHOLD = 2.0
+
     attr_reader :name, :points
 
     def self.from_gpx_element(element)
@@ -31,29 +33,25 @@ module Gpxvis
 
     def duration
       @duration ||= points.each_cons(2).map do |p1, p2|
-        p2.time.to_time.to_i - p1.time.to_time.to_i
+        p2.seconds_from(p1)
       end.reduce(:+)
     end
 
     def moving_duration
       @moving_duration ||= moving_points.map do |p1, p2|
-        p2.time.to_time.to_i - p1.time.to_time.to_i
+        p2.seconds_from(p1)
       end.reduce(:+)
     end
 
     def moving_points
       points.each_cons(2).select do |p1, p2|
-        p1.distance_from(p2) > 2.0
+        p1.distance_from(p2) > MOVING_THRESHOLD
       end
     end
 
     def average_moving_speed
       (((distance / 1000) / moving_duration) * 3600).round(2)
     end
-
-    # avg 3 in front, 3 behind for elevation
-    # elevation: uphill, downhill
-    # time: walking, total
 
     class Stat < Struct.new(:name, :value, :units)
       def to_s
