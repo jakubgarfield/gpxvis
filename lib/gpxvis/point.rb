@@ -11,6 +11,12 @@ module Gpxvis
       new(lat, lon, time, ele)
     end
 
+    def seconds_from(other_point)
+      return nil if other_point.nil?
+
+      (other_point.time.to_time.to_i - time.to_time.to_i).abs
+    end
+
     def distance_from(other_point)
       return nil if other_point.nil?
 
