@@ -8,9 +8,9 @@ module Gpxvis
 
     def self.from_gpx_element(element)
       name = element.at_xpath("xmlns:name").content || 'Unknown Track'
-      track_segment = element.at_xpath("xmlns:trkseg")
+      track_segments = element.xpath("xmlns:trkseg").map { |e| TrackSegment.from_gpx_element(e) }
 
-      new(name, [TrackSegment.from_gpx_element(track_segment)])
+      new(name, track_segments)
     end
 
     def initialize(name, segments)
@@ -35,8 +35,7 @@ module Gpxvis
     end
 
     def average_moving_speed
-      # todo
-      segments.map(&:duration).reduce(:+)
+      (((distance / 1000) / moving_duration) * 3600).round(2)
     end
 
     def points

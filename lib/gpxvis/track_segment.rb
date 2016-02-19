@@ -42,10 +42,6 @@ module Gpxvis
       end
     end
 
-    def average_moving_speed
-      (((distance / 1000) / moving_duration) * 3600).round(2)
-    end
-
     def elevation
       @elevation ||= (moving_points.map { |i1, i2| i1 } << moving_points.last.last)
         .map(&:ele)
