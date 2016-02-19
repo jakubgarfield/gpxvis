@@ -54,5 +54,23 @@ module Gpxvis
           result
         end
     end
+
+    def to_json
+      <<-EOS
+      {
+        "type": "Feature",
+        "properties": {
+          "distance": #{distance},
+          "duration": #{duration},
+          "moving_duration": #{moving_duration},
+          "uphill_elevation": #{elevation[:uphill]},
+          "downhill_elevation": #{elevation[:downhill]}
+        },
+        "geometry": { "type": "MultiLineString", "coordinates": [[
+          #{points.map { |p| "[#{p.lon}, #{p.lat}]"}.join(", ")}
+        ]]}
+      }
+      EOS
+    end
   end
 end
