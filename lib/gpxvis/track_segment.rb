@@ -67,7 +67,7 @@ module Gpxvis
           "downhill_elevation": #{elevation[:downhill]}
         },
         "geometry": { "type": "MultiLineString", "coordinates": [[
-          #{points.map { |p| "[#{p.lon}, #{p.lat}]"}.join(", ")}
+          #{points.map { |p| "[#{p.lon}, #{p.lat}, #{p.ele}]"}.join(", ")}
         ]]}
       }
       EOS
