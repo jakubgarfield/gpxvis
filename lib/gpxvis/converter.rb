@@ -1,6 +1,7 @@
 require 'gpxvis/point'
 require 'gpxvis/track'
 require 'gpxvis/renderer'
+require 'gpxvis/geo_json_formatter'
 require 'nokogiri'
 
 module Gpxvis
@@ -20,6 +21,7 @@ module Gpxvis
       raise "No 'trk' element found in #{file_name}" unless track_element
 
       @track = Track.from_gpx_element(track_element)
+      @geo_json = GeoJsonFormatter.new([track]).format
 
       output_file_name = "gpx_index.html"
       Renderer.new(track).render(output_file_name)

@@ -86,7 +86,7 @@
       var attribution = 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>';
       var tileLayer = new L.TileLayer(url, {subdomains:"1234",attribution: attribution});
 
-      var geojson = <%= @track.to_json %>;
+      var geojson = <%= @geo_json %>;
 
       var elevation = L.control.elevation({
         position: "topright",

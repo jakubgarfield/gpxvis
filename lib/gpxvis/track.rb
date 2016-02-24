@@ -50,25 +50,6 @@ module Gpxvis
       end
     end
 
-    def to_json
-      <<-EOS
-      {
-        "type": "FeatureCollection",
-        "properties": {
-          "distance": #{distance},
-          "duration": #{duration},
-          "moving_duration": #{moving_duration},
-          "average_moving_speed": #{average_moving_speed},
-          "uphill_elevation": #{elevation[:uphill]},
-          "downhill_elevation": #{elevation[:downhill]}
-        },
-        "features": [
-          #{segments.map(&:to_json).join(", ")}
-        ]
-      }
-      EOS
-    end
-
     class Stat < Struct.new(:name, :value, :units)
       def to_s
         s = "#{name.to_s.gsub(/_/, ' ')}: #{value}"
