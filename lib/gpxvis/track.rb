@@ -1,9 +1,12 @@
 require 'gpxvis/point'
 require 'gpxvis/track_segment'
+require 'gpxvis/partitions_statistics'
 require 'chronic_duration'
 
 module Gpxvis
   class Track
+    include PartitionsStatistics
+
     attr_reader :name, :segments
 
     def self.from_gpx_element(element)
@@ -16,38 +19,6 @@ module Gpxvis
     def initialize(name, segments)
       @name = name
       @segments = segments
-    end
-
-    def distance
-      segments.map(&:distance).reduce(:+)
-    end
-
-    def duration
-      segments.map(&:duration).reduce(:+)
-    end
-
-    def moving_duration
-      segments.map(&:moving_duration).reduce(:+)
-    end
-
-    def moving_points
-      segments.map(&:moving_points).reduce(:+)
-    end
-
-    def average_moving_speed
-      (((distance / 1000) / moving_duration) * 3600).round(2)
-    end
-
-    def points
-      segments.map(&:points).reduce(:+)
-    end
-
-    def elevation
-      segments.map(&:elevation).reduce({ uphill: 0, downhill: 0 }) do |result, elevation|
-        result[:uphill] += elevation[:uphill]
-        result[:downhill] += elevation[:downhill]
-        result
-      end
     end
 
     class Stat < Struct.new(:name, :value, :units)
@@ -72,6 +43,11 @@ module Gpxvis
         Stat.new(:uphill_elevation, elevation[:uphill].round(2), "m"),
         Stat.new(:downhill_elevation, elevation[:downhill].round(2), "m"),
       ].each_with_object({}) { |s, h| h[s.name] = s }
+    end
+
+    private
+    def partitions
+      @segments
     end
   end
 end

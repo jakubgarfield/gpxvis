@@ -4,29 +4,26 @@ require 'gpxvis/track'
 
 module Gpxvis
   class GeoJsonFormatter
+    include PartitionsStatistics
+
     def initialize(tracks)
       @tracks = tracks
     end
 
     def format
-      track_to_json(@tracks.first)
-    end
-
-    private
-    def track_to_json(track)
       <<-EOS
       {
         "type": "FeatureCollection",
         "properties": {
-          "distance": #{track.distance},
-          "duration": #{track.duration},
-          "moving_duration": #{track.moving_duration},
-          "average_moving_speed": #{track.average_moving_speed},
-          "uphill_elevation": #{track.elevation[:uphill]},
-          "downhill_elevation": #{track.elevation[:downhill]}
+          "distance": #{distance},
+          "duration": #{duration},
+          "moving_duration": #{moving_duration},
+          "average_moving_speed": #{average_moving_speed},
+          "uphill_elevation": #{elevation[:uphill]},
+          "downhill_elevation": #{elevation[:downhill]}
         },
         "features": [
-          #{track.segments.map { |segment| track_segment_to_json(segment) }.join(", ")}
+          #{@tracks.flat_map(&:segments).map { |segment| track_segment_to_json(segment) }.join(", ")}
         ]
       }
       EOS
@@ -48,6 +45,11 @@ module Gpxvis
         ]]}
       }
       EOS
+    end
+
+    private
+    def partitions
+      @tracks
     end
   end
 end

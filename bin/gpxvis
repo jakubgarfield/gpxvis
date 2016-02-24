@@ -2,4 +2,4 @@
 
 require 'gpxvis'
 
-Gpxvis::Converter.new(ARGV[0]).process
+Gpxvis::Converter.new(ARGV).process

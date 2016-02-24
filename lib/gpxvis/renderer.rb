@@ -4,8 +4,8 @@ module Gpxvis
   class Renderer
     attr_accessor :track
 
-    def initialize(track)
-      @track = track
+    def initialize(tracks)
+      @geo_json = GeoJsonFormatter.new(tracks).format
     end
 
     def render(output_file)
