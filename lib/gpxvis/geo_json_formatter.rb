@@ -23,17 +23,27 @@ module Gpxvis
           "downhill_elevation": #{elevation[:downhill]}
         },
         "features": [
-          #{@tracks.flat_map(&:segments).map { |segment| track_segment_to_json(segment) }.join(", ")}
+          #{formatted_track_segments.join(", ")}
         ]
       }
       EOS
     end
 
-    def track_segment_to_json(segment)
+    def formatted_track_segments
+      @tracks.map do |track|
+        track.segments.each_with_index.map do |segment, index|
+          name = track.name + (track.segments.length > 1 ? " (pt. #{index + 1})" : "")
+          track_segment_to_json(segment, name)
+        end
+      end.flatten
+    end
+
+    def track_segment_to_json(segment, name)
       <<-EOS
       {
         "type": "Feature",
         "properties": {
+          "name": "#{name}",
           "distance": #{segment.distance},
           "duration": #{segment.duration},
           "moving_duration": #{segment.moving_duration},
